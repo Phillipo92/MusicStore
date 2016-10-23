@@ -1,0 +1,108 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Lista Kupaca - Prodavnica Muzičkih Instrumenata</title>
+    </h:head>
+    <h:body>
+        <ui:composition template="/WEB-INF/myTemplate.xhtml">
+            <ui:define name="content">
+                <h:form id="forma" style="margin-top: 20px">
+
+                    <p:growl id="poruka_listakupaca" showDetail="true" />
+
+                    <p:dialog header="Brisanje kupca" widgetVar="dialogObrisiKupca" showEffect="fade"
+                              dynamic="true" resizable="false" modal="true" closable="false">
+                        <p:outputLabel value="Da li ste sigurni?"/> 
+                        <p:separator/>
+                        <p:commandButton value="Da" action="#{mBPrikazKupaca.obrisiKupca()}" icon="ui-icon-check" 
+                                         oncomplete="PF('dialogObrisiKupca').hide();" style="float: left"
+                                         update=":forma:table_kupci poruka_listakupaca"/>
+                        <p:commandButton value="Ne" onclick="PF('dialogObrisiKupca').hide();" icon="ui-icon-close"
+                                         style="float: right"/>
+                    </p:dialog>
+                    
+                    <p:dialog id="dialog_racuni" header="Računi" widgetVar="dialogRacuniKupca" showEffect="fade" dynamic="true" resizable="false" modal="true"
+                              style="display: block; text-align: center">
+                        <p:treeTable value="#{mBPrikazKupaca.rootNode}" var="stavka">
+                            <f:facet name="header">
+                                Računi
+                            </f:facet>
+                            
+                            <p:column headerText="ID">
+                                <h:outputText value="#{stavka.racun.racunID}"/>
+                            </p:column>
+                            <p:column headerText="Instrument">
+                                <h:outputText value="#{stavka.instrument.model}"/>
+                            </p:column>
+                            <p:column headerText="Cena instrumenta">
+                                <h:outputText value="#{stavka.instrument.cena}">
+                                    <f:convertNumber currencySymbol="RSD" type="currency" locale="fr-FR"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Ukupan iznos">
+                                <h:outputText value="#{stavka.racun.ukupnaVrednost}">
+                                    <f:convertNumber currencySymbol="RSD" type="currency" locale="fr-FR"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Prodavac">
+                                <h:outputText value="#{stavka.racun.prodao.ime} #{stavka.racun.prodao.prezime}"/>
+                            </p:column>
+                            <p:column headerText="Datum">
+                                <h:outputText value="#{stavka.racun.formatirajDatum()}"/>
+                            </p:column>
+                        </p:treeTable>
+                    </p:dialog>
+
+                    <p:contextMenu for="table_kupci">
+                        <p:menuitem value="Detalji" icon="ui-icon-search" action="#{mBPrikazKupaca.pokreniIzmenu()}"/>
+                        <p:menuitem value="Obriši" icon="ui-icon-close" onclick="PF('dialogObrisiKupca').show();"/>
+                        <p:separator/>
+                        <p:menuitem value="Pregled računa" icon="ui-icon-document" oncomplete="PF('dialogRacuniKupca').show();"
+                                    action="#{mBPrikazKupaca.vratiRacune()}" update=":forma:dialog_racuni"/>
+                    </p:contextMenu>
+
+                    <p:dataTable id="table_kupci" var="kupac" value="#{mBPrikazKupaca.listaKupaca}"
+                                 filteredValue="#{mBPrikazKupaca.listaFiltriranihKupaca}" widgetVar="tabelaKupaca"
+                                 rowKey="#{kupac.jmbg}" selection="#{mBPrikazKupaca.selektovaniKupac}" selectionMode="single"
+                                 scrollable="true" scrollHeight="184">
+
+                        <f:facet name="header">
+                            Kupci
+                        </f:facet>
+
+                        <f:facet name="footer">
+                            <p:outputLabel value="Pretraga: "/>
+                            <p:inputText id="globalFilter" onkeyup="PF('tabelaKupaca').filter()" style="width: 215px"/>
+                        </f:facet>
+
+                        <p:column headerText="JMBG" filterMatchMode="contains" filterBy="#{kupac.jmbg}" filterStyle="display: none"
+                                  sortBy="#{kupac.jmbg}">
+                            <h:outputText value="#{kupac.jmbg}"/>
+                        </p:column>
+
+                        <p:column headerText="Ime" filterMatchMode="contains" filterBy="#{kupac.ime}" filterStyle="display: none"
+                                  sortBy="#{kupac.ime}">
+                            <h:outputText value="#{kupac.ime}"/>
+                        </p:column>
+
+                        <p:column headerText="Prezime" filterMatchMode="contains" filterBy="#{kupac.prezime}" filterStyle="display: none"
+                                  sortBy="#{kupac.prezime}">
+                            <h:outputText value="#{kupac.prezime}"/>
+                        </p:column>
+
+                        <p:column headerText="Mesto" filterMatchMode="contains" filterBy="#{kupac.mesto.nazivMesta}" filterStyle="display: none"
+                                  sortBy="#{kupac.mesto.nazivMesta}">
+                            <h:outputText value="#{kupac.mesto.ptt} - #{kupac.mesto.nazivMesta}"/>
+                        </p:column>
+                    </p:dataTable>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

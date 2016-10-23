@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      >
+    <h:head>
+        <title>Prodavnica Muzičkih Instrumenata</title>
+        <script name="jquery/jquery.js" library="primefaces"></script>
+    </h:head>
+    <h:body style="background-image: url(#{resource['img/asfalt.jpg']})">
+        <h:outputStylesheet name="css/custom.css"/>
+        <h:form>
+            <p:growl id="message"/>
+            <p:panel header="Dobrodošli!" style="margin: auto; margin-top: 200px; width: 440px; display: block; text-align: center">
+                <p:panelGrid columns="2" style="margin: auto">
+
+                    <p:outputLabel value="Korisničko ime: "/>
+                    <p:inputText id="input_user" value="#{mBRadnik.username}"/>
+
+                    <p:outputLabel value="Korisnička šifra: "/>
+                    <p:password id="input_pass" value="#{mBRadnik.password}"/>
+
+                    <p:outputLabel/>
+                    <p:commandButton id="btn_login" value="Potvrdi" action="#{mBRadnik.logIn()}" update="message" style="float: left"/>
+                </p:panelGrid>
+                <h:message for="input_user"/>
+                <h:message for="input_pass"/>
+                <p:panel header="Nemaš nalog? Registruj se" style="display: block; text-align: center">
+                    <p:commandButton value="Registracija" action="registracija?faces-redirect=true"/>
+                </p:panel>
+            </p:panel>
+        </h:form>
+    </h:body>
+</html>
+

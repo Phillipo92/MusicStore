@@ -1,0 +1,162 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Rad Sa Instrumentima - Prodavnica Muzičkih Instrumenata</title>
+    </h:head>
+    <h:body>
+        <ui:composition template="/WEB-INF/myTemplate.xhtml">
+            <ui:define name="content">
+                <h:form id="forma">
+
+                    <p:growl id="poruka_radsainstrumentima" for="poruka" showDetail="true" />
+
+                    <br/>
+                    <p:panel id="panel_instrument" header="Podaci o instrumentu">
+                        <p:panelGrid id="grid_instrument">
+
+                            <p:row>
+                                <p:column>
+                                    <p:outputLabel value="Kategorija: "/>
+                                </p:column>
+                                <p:column>
+                                    <p:selectOneMenu value="#{mBPrikazInstrumenata.instrument.kategorija}" style="width: 226px">
+                                        <f:selectItems value="#{mBPrikazInstrumenata.listaKategorija}"/>
+                                    </p:selectOneMenu>
+                                </p:column>
+                                <p:column rowspan="6">
+
+                                    <p:contextMenu for="table_instrumenti">
+                                        <p:menuitem value="Obriši" icon="ui-icon-close" onclick="PF('dialogObrisiInstrument').show();"/>
+                                    </p:contextMenu>
+
+                                    <p:dialog header="Brisanje instrumenta" widgetVar="dialogObrisiInstrument" showEffect="fade" hideEffect="fade"
+                                              dynamic="true" resizable="false" modal="true">
+                                        <p:panelGrid>
+                                            <p:row>
+                                                <p:column colspan="2">
+                                                    <h:outputText value="Da li ste sigurni?"/> 
+                                                </p:column>
+                                            </p:row>
+                                            <p:row>
+                                                <p:column>
+                                                    <p:commandButton value="Da" action="#{mBPrikazInstrumenata.obrisiInstrument()}" 
+                                                                     icon="ui-icon-check" oncomplete="PF('dialogObrisiInstrument').hide();" 
+                                                                     update=":forma:table_instrumenti poruka_radsainstrumentima"
+                                                                     process="@this,table_instrumenti"/>
+                                                </p:column>
+                                                <p:column>
+                                                    <p:commandButton value="Ne" onclick="PF('dialogObrisiKupca').hide();" icon="ui-icon-close" />
+                                                </p:column>
+                                            </p:row>
+                                        </p:panelGrid>
+                                    </p:dialog>
+
+                                    <p:dataTable id="table_instrumenti" var="instrument" value="#{mBPrikazInstrumenata.listaInstrumenata}" 
+                                                 filteredValue="#{mBPrikazInstrumenata.listaFiltriranih}" widgetVar="tabelaInstrumenata"
+                                                 scrollable="true" scrollHeight="181" rowKey="#{instrument.serijskiBroj}" selectionMode="single"
+                                                 selection="#{mBPrikazInstrumenata.selektovaniInstrument}">
+                                        <f:facet name="header">
+                                            Instrumenti
+                                        </f:facet>
+
+                                        <f:facet name="footer" >
+                                            <p:outputLabel value="Pretraga: "/>
+                                            <p:inputText id="globalFilter" onkeyup="PF('tabelaInstrumenata').filter()" style="width: 215px;"/>
+                                        </f:facet>
+
+                                        <p:column headerText="ID" sortBy="#{instrument.serijskiBroj}">
+                                            <h:outputText value="#{instrument.serijskiBroj}"/>
+                                        </p:column>
+
+                                        <p:column headerText="Proizvodjac" filterMatchMode="contains" 
+                                                  filterBy="#{instrument.proizvodjac}" filterStyle="display: none" 
+                                                  sortBy="#{instrument.proizvodjac}">
+                                            <h:outputText value="#{instrument.proizvodjac}"/>
+                                        </p:column>
+
+                                        <p:column headerText="Model" filterMatchMode="contains" filterBy="#{instrument.model}" 
+                                                  filterStyle="display: none" sortBy="#{instrument.model}">
+                                            <h:outputText value="#{instrument.model}"/>
+                                        </p:column>
+
+                                        <p:column headerText="Kategorija" filterMatchMode="contains" filterBy="#{instrument.kategorija}"
+                                                  filterStyle="display: none" sortBy="#{instrument.kategorija}">
+                                            <h:outputText value="#{instrument.kategorija}"/>
+                                        </p:column>
+
+                                        <p:column headerText="Cena" filterMatchMode="contains" filterBy="#{instrument.cena}"
+                                                  filterStyle="display: none" sortBy="#{instrument.cena}">
+                                            <h:outputText value="#{instrument.cena}">
+                                                <f:convertNumber currencySymbol="RSD" type="currency" locale="fr-FR"/>
+                                            </h:outputText>
+                                        </p:column>
+                                    </p:dataTable>
+                                </p:column>
+                            </p:row>
+                            <p:row>
+                                <p:column>
+                                    <p:outputLabel value="Proizvođač:  "/>
+                                </p:column>
+                                <p:column>
+                                    <p:inputText id="input_proizvodjac" value="#{mBPrikazInstrumenata.instrument.proizvodjac}"
+                                                 required="#{not empty param[save.clientId]}" 
+                                                 requiredMessage="Unesite proizvođača"/>
+                                    <p:message for="input_proizvodjac"/>
+                                </p:column>
+                            </p:row>
+                            <p:row>
+                                <p:column>
+                                    <p:outputLabel value="Model: "/>
+                                </p:column>
+                                <p:column>
+                                    <p:inputText id="input_model" value="#{mBPrikazInstrumenata.instrument.model}" 
+                                                 required="#{not empty param[save.clientId]}" 
+                                                 requiredMessage="Unesite model"/>
+                                    <p:message for="input_model"/>
+                                </p:column>
+                            </p:row>
+                            <p:row>
+                                <p:column>
+                                    <p:outputLabel value="ID: "/>
+                                </p:column>
+                                <p:column>
+                                    <p:inputText id="input_sb" value="#{mBPrikazInstrumenata.instrument.serijskiBroj}" 
+                                                 onkeypress="if (event.which &lt; 48 || event.which &gt; 57) return false;"
+                                                 required="#{not empty param[save.clientId]}"  requiredMessage="Unesite serijski broj"/>
+                                    <p:message for="input_sb"/>
+                                </p:column>
+                            </p:row>
+                            <p:row>
+                                <p:column>
+                                    <p:outputLabel value="Cena: "/>
+                                </p:column>
+                                <p:column>
+                                    <p:inputText id="input_cena" value="#{mBPrikazInstrumenata.instrument.cena}"
+                                                 onkeypress="if (event.which &lt; 48 || event.which &gt; 57) return false;"
+                                                 requiredMessage="Unesite cenu" required="#{not empty param[save.clientId]}" />
+                                    <p:watermark for="input_cena" value="RSD"/>
+                                    <p:message for="input_cena"/>
+                                </p:column>
+                            </p:row>
+                            <p:row>
+                                <p:column>
+
+                                </p:column>
+                                <p:column>
+                                    <p:commandButton value="Dodaj" action="#{mBPrikazInstrumenata.sacuvajInstrument()}" binding="#{save}"
+                                                     update=":forma:grid_instrument :forma:table_instrumenti poruka_radsainstrumentima"/>
+                                </p:column>
+                            </p:row>
+                        </p:panelGrid>
+                    </p:panel>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

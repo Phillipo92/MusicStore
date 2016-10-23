@@ -1,0 +1,137 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Rad Sa Kupcima - Prodavnica Muzičkih Instrumenata</title>
+        <script name="jquery/jquery.js" library="primefaces"></script>
+    </h:head>
+    <h:body>
+        <ui:composition template="/WEB-INF/myTemplate.xhtml">
+            <ui:define name="content">
+                <h:form id="forma">
+
+                    <p:growl id="poruka_novikupac" for="poruka" showDetail="true" />
+
+                    <br/>
+                    <p:panel id="panel_kupac" header="Podaci o kupcu" style="width: 58%; margin: auto">
+                        <p:panelGrid id="grid_kupac">
+
+                            <p:row>
+                                <p:column>
+                                    <p:outputLabel value="Ime: "/>
+                                </p:column>
+                                <p:column>
+                                    <p:inputText id="input_ime" required="true" requiredMessage="Unesite ime kupca" 
+                                                 value="#{mBUnosKupca.kupac.ime}"/>
+                                    <p:message for="input_ime"/>
+                                </p:column>
+                                <p:column rowspan="5">
+                                    <p:panel id="panel_adresa" header="Adresa" style="width: 100%">
+                                        <p:panelGrid id="grid_adresa">
+
+                                            <p:row>
+                                                <p:column>
+                                                    <p:outputLabel value="Ulica: "/>
+                                                </p:column>
+                                                <p:column>
+                                                    <p:inputText id="input_ulica" value="#{mBUnosKupca.kupac.ulica}"/>
+                                                </p:column>
+                                            </p:row>
+
+                                            <p:row>
+                                                <p:column>
+                                                    <p:outputLabel value="Broj: "/>
+                                                </p:column>
+                                                <p:column>
+                                                    <p:inputText id="input_broj" value="#{mBUnosKupca.kupac.broj}"/>
+                                                </p:column>
+                                            </p:row>
+
+                                            <p:row>
+                                                <p:column>
+                                                    <p:outputLabel value="Mesto: "/>
+                                                </p:column>
+                                                <p:column>
+                                                    <p:selectOneMenu value="#{mBUnosKupca.kupac.mesto}" style="width: 226px"
+                                                                     converter="mestoCNV">
+                                                        <f:selectItems value="#{mBUnosKupca.listaMesta}" var="m" itemLabel="#{m.nazivMesta}"/>
+                                                    </p:selectOneMenu>
+                                                </p:column>
+                                            </p:row>
+                                        </p:panelGrid>
+                                    </p:panel>
+                                </p:column>
+                            </p:row>
+
+                            <p:row>
+                                <p:column>
+                                    <p:outputLabel value="Prezime: "/>
+                                </p:column>
+                                <p:column>
+                                    <p:inputText id="input_prezime" required="true" requiredMessage="Unesite prezime kupca"
+                                                 value="#{mBUnosKupca.kupac.prezime}"/>
+                                    <p:message for="input_prezime"/>
+                                </p:column>
+                            </p:row>
+
+                            <p:row>
+                                <p:column>
+                                    <p:outputLabel value="JMBG: "/>
+                                </p:column>
+                                <p:column>
+                                    <p:inputText id="input_jmbg" onkeypress="if (event.which &lt; 48 || event.which &gt; 57) return false;" 
+                                                 required="true" maxlength="13" requiredMessage="Unesite JMBG kupca"
+                                                 value="#{mBUnosKupca.kupac.jmbg}" disabled="#{mBUnosKupca.blokirajJMBG}">
+                                    </p:inputText>
+                                    <p:message for="input_jmbg"/>
+                                </p:column>
+                            </p:row>
+
+                            <p:row>
+                                <p:column>
+                                    <p:outputLabel value="Telefon: "/>
+                                </p:column>
+                                <p:column>
+                                    <p:inputMask id="input_telefon" mask="999/999-99-99" required="true" requiredMessage="Unesite telefon kupca" 
+                                                 value="#{mBUnosKupca.kupac.telefon}"/>
+                                    <p:message for="input_telefon"/>
+                                </p:column>
+                            </p:row>
+
+                            <p:row>
+                                <p:column>
+                                    <p:outputLabel value="Email: "/>
+                                </p:column>
+                                <p:column>
+                                    <p:inputText id="input_email" validatorMessage="Email je u lošem formatu" value="#{mBUnosKupca.kupac.mail}">
+                                        <f:validateRegex
+                                            pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$" />
+                                    </p:inputText>
+                                    <p:message for="input_email"/>
+                                </p:column>
+                            </p:row>
+                            <p:row>
+                                <p:column/>
+                                <p:column>
+                                    <p:commandButton value="Kreiraj" action="#{mBUnosKupca.kreirajKupca()}" 
+                                                     update=":forma:panel_kupac poruka_novikupac" 
+                                                     rendered="#{mBUnosKupca.kreirajDugme}" style="width: 150px">
+                                    </p:commandButton>
+                                    <p:commandButton id="btn_izmeni" value="Izmeni" action="#{mBUnosKupca.izmeniKupca()}" 
+                                                     update=":forma:panel_kupac poruka_novikupac" 
+                                                     rendered="#{mBUnosKupca.izmenaDugme}"  style="width: 150px"/>
+                                </p:column>
+                            </p:row>
+
+                        </p:panelGrid>
+                    </p:panel>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

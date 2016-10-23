@@ -1,0 +1,47 @@
+<pretty-config xmlns="http://ocpsoft.org/schema/rewrite-config-prettyfaces" 
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+               xsi:schemaLocation="http://ocpsoft.org/schema/rewrite-config-prettyfaces
+                      http://ocpsoft.org/xml/ns/prettyfaces/rewrite-config-prettyfaces.xsd">
+
+    <url-mapping id="index">
+        <pattern value="/index" />
+        <view-id value="/faces/index.xhtml" />
+    </url-mapping>
+    
+    <url-mapping id="login">
+        <pattern value="/login" />
+        <view-id value="/faces/logIn.xhtml" />
+    </url-mapping>
+    
+    <url-mapping id="lista_kupaca">
+        <pattern value="/lista_kupaca" />
+        <view-id value="/faces/lista_kupaca.xhtml" />
+    </url-mapping>
+    
+    <url-mapping id="novi_kupac">
+        <pattern value="/novi_kupac" />
+        <view-id value="/faces/novi_kupac.xhtml" />
+    </url-mapping>
+    
+    <url-mapping id="novi_racun">
+        <pattern value="/novi_racun" />
+        <view-id value="/faces/novi_racun.xhtml" />
+    </url-mapping>
+    
+    <url-mapping id="lista_racuna">
+        <pattern value="/lista_racuna" />
+        <view-id value="/faces/lista_racuna.xhtml" />
+    </url-mapping>
+    
+    <url-mapping id="rad_sa_instrumentima">
+        <pattern value="/rad_sa_instrumentima" />
+        <view-id value="/faces/rad_sa_instrumentima.xhtml" />
+    </url-mapping>
+    
+    <url-mapping id="registracija">
+        <pattern value="/registracija" />
+        <view-id value="/faces/registracija.xhtml" />
+    </url-mapping>
+    
+
+</pretty-config>

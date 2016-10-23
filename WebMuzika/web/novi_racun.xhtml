@@ -1,0 +1,243 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Rad Sa Računima - Prodavnica Muzičkih Instrumenata</title>
+    </h:head>
+    <h:body>
+        <ui:composition template="/WEB-INF/myTemplate.xhtml">
+            <ui:define name="content">
+                <h:form id="forma">
+                    <p:growl id="poruka_racun" showDetail="true"/>
+                    <p:panel id="panel_racun" header="Unos novog računa" style="margin: auto">
+                        
+                        <p:panelGrid id="grid_racun" style="width: 100%">
+                            <p:row>
+                                <p:column>
+                                    <p:commandButton value="Izaberi kupca" onclick="PF('dialogKupci').show()" icon="ui-icon-search"/>
+                                    <p:outputLabel value="#{mBUnosRacuna.selectedKupac.ime} #{mBUnosRacuna.selectedKupac.prezime}"
+                                                   style="margin-left: 10px; color: red"/>
+                                </p:column>
+                                <p:column>
+                                    <p:commandButton value="Kreiraj račun" actionListener="#{mBUnosRacuna.izracunajIznos()}" 
+                                                     update=":forma:dialog_kreirajracun :forma:poruka_racun" disabled="#{mBUnosRacuna.prikaziDialog}"
+                                                     oncomplete="PF('dialogRacun').show()" style="float: right"/>
+                                </p:column>
+                            </p:row>
+                        </p:panelGrid>
+
+                        <p:dialog id="dialog_kolicina" header="Instrument" widgetVar="dialogKolicina" dynamic="true" showEffect="fade" 
+                                  hideEffect="fade" modal="true" resizable="false">
+                            
+                            <p:panelGrid>
+                                <p:row>
+                                    <p:column>
+                                        <p:outputLabel for="input_kolicina" value="Unesite količinu: "/>
+                                        <p:inputText id="input_kolicina" value="#{mBUnosRacuna.kolicina}" style="width: 50px"/>
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column colspan="2">
+                                        <p:commandButton id="btn_kolicina" action="#{mBUnosRacuna.dodajStavku()}" value="Potvrdi" 
+                                                         icon="ui-icon-check" onclick="PF('dialogKolicina').hide();"
+                                                         update=":forma:table_stavke :forma:dialog_kolicina :forma:grid_racun"
+                                                         style="margin-left: 38px"/>
+                                    </p:column>
+                                </p:row>
+                            </p:panelGrid>
+                        </p:dialog>
+
+                        <p:dialog id="dialog_kupciracun" header="Kupci" widgetVar="dialogKupci" dynamic="true" showEffect="fade" hideEffect="fade" 
+                                  modal="true" resizable="false" width="820px" closable="false">
+                            
+                            <p:dataTable id="table_kupci2" var="kupac" value="#{mBUnosRacuna.listaKupacaRacun}"
+                                         filteredValue="#{mBUnosRacuna.listaFiltriranihRacun}" widgetVar="tabelaKupaca2"
+                                         rowKey="#{kupac.jmbg}" selection="#{mBUnosRacuna.selectedKupac}" selectionMode="single"
+                                         scrollable="true" scrollHeight="156">
+
+                                <f:facet name="header">
+                                    Kupci
+                                </f:facet>
+
+                                <f:facet name="footer">
+                                    <p:commandButton process="table_kupci2" value="Potvrdi" style="float: left; height: 32px;"
+                                                     update=":forma:grid_racun" oncomplete="PF('dialogKupci').hide()"
+                                                     icon="ui-icon-check" actionListener="#{mBUnosRacuna.validacija()}"/>
+                                    <p:outputLabel for="globalFilter" value="Pretraga: " style="margin-left: 360px"/>
+                                    <p:inputText id="globalFilter" onkeyup="PF('tabelaKupaca2').filter()" style="width: 150px"/>
+                                </f:facet>
+
+                                <p:column headerText="JMBG" filterMatchMode="contains" filterBy="#{kupac.jmbg}" filterStyle="display: none"
+                                          sortBy="#{kupac.jmbg}">
+                                    <h:outputText value="#{kupac.jmbg}"/>
+                                </p:column>
+                                <p:column headerText="Ime" filterMatchMode="contains" filterBy="#{kupac.ime}" filterStyle="display: none"
+                                          sortBy="#{kupac.ime}">
+                                    <h:outputText value="#{kupac.ime}"/>
+                                </p:column>
+                                <p:column headerText="Prezime" filterMatchMode="contains" filterBy="#{kupac.prezime}" filterStyle="display: none"
+                                          sortBy="#{kupac.prezime}">
+                                    <h:outputText value="#{kupac.prezime}"/>
+                                </p:column>
+                                <p:column headerText="Mesto" filterMatchMode="contains" filterBy="#{kupac.mesto.nazivMesta}" filterStyle="display: none"
+                                          sortBy="#{kupac.mesto.nazivMesta}">
+                                    <h:outputText value="#{kupac.mesto.ptt} - #{kupac.mesto.nazivMesta}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </p:dialog>
+                        
+                        <p:dialog id="dialog_kreirajracun" header="Račun" widgetVar="dialogRacun" dynamic="true" showEffect="fade" 
+                                  hideEffect="fade" modal="true" resizable="false" closable="false">
+                            <p:panelGrid>
+                                <p:row>
+                                    <p:column>
+                                        <p:outputLabel value="Račun ID: "/>
+                                    </p:column>
+                                    <p:column>
+                                        <p:outputLabel value="##{mBUnosRacuna.racun.racunID}"/>
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column>
+                                        <p:outputLabel value="Kupac: "/>
+                                    </p:column>
+                                    <p:column>
+                                        <p:outputLabel value="#{mBUnosRacuna.selectedKupac.ime} #{mBUnosRacuna.selectedKupac.prezime}"/>
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column>
+                                        <p:outputLabel value="Prodavac: "/>
+                                    </p:column>
+                                    <p:column>
+                                        <p:outputLabel value="#{mBUnosRacuna.radnik.ime} #{mBUnosRacuna.radnik.prezime}"/>
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column>
+                                        <p:outputLabel value="Datum: "/>
+                                    </p:column>
+                                    <p:column>
+                                        <p:outputLabel value="#{mBUnosRacuna.formatirajDatum()}"/>
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column colspan="2">
+                                        <p:separator/>
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column>
+                                        <p:outputLabel value="Popust: "/>
+                                    </p:column>
+                                    <p:column>
+                                        <p:outputLabel value="#{mBUnosRacuna.popustToString()}"/>
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column>
+                                        <p:outputLabel value="Ukupan iznos: "/>
+                                    </p:column>
+                                    <p:column>
+                                        <p:outputLabel value="#{mBUnosRacuna.iznosSaPopustom}">
+                                            <f:convertNumber currencySymbol="RSD" type="currency" locale="fr-FR"/>
+                                        </p:outputLabel>
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column>
+                                        <p:commandButton value="Kreiraj" action="#{mBUnosRacuna.sacuvajRacun()}" 
+                                                         oncomplete="PF('dialogRacun').hide()" 
+                                                         update=":forma:poruka_racun :forma:table_stavke :forma:grid_racun"/>
+                                    </p:column>
+                                    <p:column>
+                                        <p:commandButton value="Otkaži" oncomplete="PF('dialogRacun').hide()" 
+                                                         actionListener="#{mBUnosRacuna.resetujIznos()}"
+                                                         style="float: right"/>
+                                    </p:column>
+                                </p:row>
+                            </p:panelGrid>
+                        </p:dialog>
+
+
+                        <p:contextMenu for="table_instrumenti2">
+                            <p:menuitem value="Dodaj" icon="" onclick="PF('dialogKolicina').show();"/>
+                        </p:contextMenu>
+
+                        <p:dataTable id="table_instrumenti2" var="instrument" value="#{mBUnosRacuna.listaInstrumenataRacun}" 
+                                     filteredValue="#{mBUnosRacuna.listaFiltriranihInstrumenataRacun}" widgetVar="tabelaInstrumenata2"
+                                     scrollable="true" scrollHeight="183" rowKey="#{instrument.serijskiBroj}" selectionMode="single"
+                                     selection="#{mBUnosRacuna.selectedInstrument}" style="margin-top: 10px">
+                            <f:facet name="header">
+                                Instrumenti
+                            </f:facet>
+
+                            <f:facet name="footer" >
+                                <p:outputLabel value="Pretraga: "/>
+                                <p:inputText id="globalFilter" onkeyup="PF('tabelaInstrumenata2').filter()" style="width: 215px"/>
+                            </f:facet>
+
+                            <p:column headerText="ID" sortBy="#{instrument.serijskiBroj}">
+                                <h:outputText value="#{instrument.serijskiBroj}"/>
+                            </p:column>
+
+                            <p:column headerText="Proizvodjac" filterMatchMode="contains" 
+                                      filterBy="#{instrument.proizvodjac}" filterStyle="display: none" sortBy="#{instrument.proizvodjac}">
+                                <h:outputText value="#{instrument.proizvodjac}"/>
+                            </p:column>
+
+                            <p:column headerText="Model" filterMatchMode="contains" filterBy="#{instrument.model}" 
+                                      filterStyle="display: none" sortBy="#{instrument.model}">
+                                <h:outputText value="#{instrument.model}"/>
+                            </p:column>
+
+                            <p:column headerText="Kategorija" filterMatchMode="contains" filterBy="#{instrument.kategorija}"
+                                      filterStyle="display: none" sortBy="#{instrument.kategorija}">
+                                <h:outputText value="#{instrument.kategorija}"/>
+                            </p:column>
+
+                            <p:column headerText="Cena" filterMatchMode="contains" filterBy="#{instrument.cena}"
+                                      filterStyle="display: none" sortBy="#{instrument.cena}">
+                                <h:outputText value="#{instrument.cena}">
+                                    <f:convertNumber currencySymbol="RSD" type="currency" locale="fr-FR"/>
+                                </h:outputText>
+                            </p:column>
+                        </p:dataTable>
+                        
+                        <br/>
+                        
+                        <p:dataTable id="table_stavke" value="#{mBUnosRacuna.listaStavki}" var="stavka" rowIndexVar="rowIndex">
+
+                            <f:facet name="header">
+                                Stavke Računa
+                            </f:facet>
+
+                            <f:facet name="footer" >
+                                <p:outputLabel value="P" rendered="true" style="visibility: hidden"/>
+                            </f:facet>
+
+                            <p:column headerText="Redni broj">
+                                <h:outputText value="#{rowIndex+1}"/>
+                            </p:column>
+
+                            <p:column headerText="Naziv">
+                                <h:outputText value="#{stavka.instrument.proizvodjac} #{stavka.instrument.model} - #{stavka.instrument.kategorija}"/>
+                            </p:column>
+
+                            <p:column headerText="Iznos">
+                                <h:outputText value="#{stavka.instrument.cena}">
+                                    <f:convertNumber currencySymbol="RSD" type="currency" locale="fr-FR"/>
+                                </h:outputText>
+                            </p:column>
+                        </p:dataTable>
+                    </p:panel>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

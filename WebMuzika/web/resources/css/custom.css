@@ -1,0 +1,22 @@
+
+.ui-widget-content {
+    border: 1px solid #aaaaaa;
+    background: #ebebeb;
+    color: #2c4359;
+}
+.ui-widget-header {
+    border: 1px solid #55a0b0; 
+    background: #55a0b0;
+    color: #333333;
+    font-weight: bold;
+}
+
+.ui-panelgrid>*>tr,
+.ui-panelgrid .ui-panelgrid-cell {
+    border: none;
+}
+
+.ui-growl{
+    position: absolute;
+    top: 60px;
+}
